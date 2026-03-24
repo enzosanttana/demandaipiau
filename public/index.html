@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefeitura de Ipiaú - Registro de Demandas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container header-flex">
+            <img src="https://ipiau.ba.gov.br/wp-content/uploads/2021/05/logo-ipiau.png" alt="Logo Ipiaú" class="logo">
+            <h1>Portal da Cidadania</h1>
+        </div>
+    </header>
+
+    <!-- MENU DE NAVEGAÇÃO -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="active">NOVA DEMANDA</a>
+            <a href="historico.html">HISTÓRICO</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Registrar Nova Demanda</h2>
+                <span class="status-badge">Status Inicial: PENDENTE</span>
+            </div>
+            
+            <form id="formDemanda">
+                <div class="form-group">
+                    <label>Nome do Solicitante</label>
+                    <input type="text" id="solicitante" required placeholder="Seu nome completo">
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Bairro</label>
+                        <select id="bairro" required>
+                            <option value="">Selecione o bairro</option>
+                            <option value="Centro">Centro</option>
+                            <option value="Euclides Neto">Euclides Neto</option>
+                            <option value="Conceição">Conceição</option>
+                            <option value="Aparecida">Aparecida</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Demanda</label>
+                        <select id="tipo" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="Iluminação Pública">Iluminação Pública</option>
+                            <option value="Limpeza Urbana">Limpeza Urbana</option>
+                            <option value="Infraestrutura">Tapa Buracos / Via</option>
+                            <option value="Saúde">Saúde</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Endereço / Referência</label>
+                    <input type="text" id="endereco" required placeholder="Rua, número, ponto de referência">
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição Detalhada</label>
+                    <textarea id="descricao" rows="4" required placeholder="Conte-nos o que está acontecendo..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="btn-file">
+                        📷 Anexar Foto do Local
+                        <input type="file" id="foto" accept="image/*" required>
+                    </label>
+                    <div id="preview-container"></div>
+                </div>
+
+                <button type="submit" id="btnSalvar">SALVAR E ENVIAR DEMANDA</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
