@@ -1,69 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Ipiaú - Histórico de Demandas</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
     <header>
-        <div class="container header-flex">
-            <img src="https://ipiau.ba.gov.br/wp-content/uploads/2021/05/logo-ipiau.png" class="logo">
-            <h1>Painel de Gestão</h1>
-        </div>
+      <div class="container header-flex">
+        <img src="images/logopmi.png" class="logo" alt="Prefeitura de Ipiaú" />
+        <h1>Painel de Gestão</h1>
+      </div>
     </header>
 
     <nav>
-        <div class="container">
-            <a href="index.html">NOVA DEMANDA</a>
-            <a href="historico.html" class="active">HISTÓRICO</a>
-        </div>
+      <div class="container">
+        <a href="index.html">NOVA DEMANDA</a>
+        <a href="historico.html" class="active">HISTÓRICO</a>
+      </div>
     </nav>
 
-    <main class="container" style="margin-top: 20px;">
-        <!-- QUADROS DE RESUMO (DASHBOARD) -->
-        <div class="dashboard">
-            <div class="dash-card">
-                <h3>Total de Demandas</h3>
-                <p id="count-total">0</p>
-            </div>
-            <div class="dash-card">
-                <h3>Pendentes</h3>
-                <p id="count-pendentes" style="color: #F39200;">0</p>
-            </div>
-            <div class="dash-card">
-                <h3>Enviadas</h3>
-                <p id="count-enviadas">0</p>
-            </div>
+    <main class="container" style="margin-top: 20px">
+      <!-- DASHBOARD -->
+      <div class="dashboard">
+        <div class="dash-card">
+          <h3>Total de Demandas</h3>
+          <p id="count-total">0</p>
         </div>
 
-        <div class="card">
-            <div class="filters">
-                <input type="text" id="search" placeholder="Buscar por solicitante ou bairro...">
-                <select id="filter-status">
-                    <option value="TODOS">TODOS STATUS</option>
-                    <option value="PENDENTE">PENDENTES</option>
-                    <option value="ENVIADA">ENVIADAS</option>
-                </select>
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Solicitante</th>
-                        <th>Bairro</th>
-                        <th>Tipo</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-corpo">
-                    <!-- Preenchido pelo JS -->
-                </tbody>
-            </table>
+        <div class="dash-card">
+          <h3>Pendentes</h3>
+          <p id="count-pendentes" style="color: #f39200">0</p>
         </div>
+
+        <div class="dash-card">
+          <h3>Enviadas</h3>
+          <p id="count-enviadas">0</p>
+        </div>
+      </div>
+
+      <!-- CARD PRINCIPAL -->
+      <div class="card">
+        <!-- FILTROS -->
+        <div class="filters">
+          <input
+            type="text"
+            id="search"
+            placeholder="Buscar por solicitante ou bairro..."
+          />
+
+          <select id="filter-status">
+            <option value="TODOS">TODOS STATUS</option>
+            <option value="PENDENTE">PENDENTES</option>
+            <option value="ENVIADA">ENVIADAS</option>
+          </select>
+        </div>
+
+        <!-- TABELA -->
+        <div class="table-container">
+          <table class="demanda-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Solicitante</th>
+                <th>Bairro</th>
+                <th>Tipo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-corpo">
+              <!-- JS vai preencher aqui -->
+              <tr class="loading-row">
+                <td colspan="5">
+                  <div class="loader-text">Buscando demandas em Ipiaú...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
 
     <script src="historico.js"></script>
-</body>
+  </body>
 </html>

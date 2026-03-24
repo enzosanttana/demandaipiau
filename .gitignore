@@ -1,4 +1,4 @@
 .vscode/
 .vscode_auth/
-*.db
-*.session
+.db
+.session

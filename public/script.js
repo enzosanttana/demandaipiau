@@ -19,7 +19,17 @@ form.addEventListener('submit', async (e) => {
 
     const btn = document.getElementById('btnSalvar');
     btn.disabled = true;
-    btn.innerText = "Processando e Enviando...";
+    btn.innerText = "Processando...";
+
+    // Alerta de carregamento (Loading)
+    Swal.fire({
+        title: 'Enviando Demanda',
+        text: 'Por favor, aguarde enquanto geramos o PDF e enviamos para o WhatsApp...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     const formData = new FormData();
     formData.append('solicitante', document.getElementById('solicitante').value);
@@ -36,15 +46,28 @@ form.addEventListener('submit', async (e) => {
         });
 
         if (response.ok) {
-            alert("Sucesso! Sua demanda foi registrada e enviada para a prefeitura.");
-            form.reset();
-            preview.innerHTML = '';
+            Swal.fire({
+                title: 'Sucesso!',
+                text: 'Sua demanda foi registrada e enviada com sucesso para a prefeitura.',
+                icon: 'success',
+                confirmButtonColor: '#008D36', // Verde Ipiaú
+                confirmButtonText: 'Ótimo!'
+            }).then(() => {
+                form.reset();
+                preview.innerHTML = '';
+                window.location.href = "historico.html"; // Redireciona após o OK
+            });
         } else {
-            alert("Erro ao enviar. Tente novamente.");
+            throw new Error('Erro no servidor');
         }
     } catch (err) {
-        console.error(err);
-        alert("Erro de conexão com o servidor.");
+        Swal.fire({
+            title: 'Ops!',
+            text: 'Ocorreu um erro ao enviar sua demanda. Verifique sua conexão ou se o WhatsApp está conectado.',
+            icon: 'error',
+            confirmButtonColor: '#F39200', // Laranja Ipiaú
+            confirmButtonText: 'Tentar novamente'
+        });
     } finally {
         btn.disabled = false;
         btn.innerText = "SALVAR E ENVIAR DEMANDA";

@@ -1,10 +1,16 @@
 async function carregarDemandas() {
     try {
         const response = await fetch('/api/demandas');
+        if (!response.ok) throw new Error();
         const demandas = await response.json();
         renderizarPagina(demandas);
     } catch (err) {
-        console.error("Erro ao carregar:", err);
+        Swal.fire({
+            title: 'Erro de Carregamento',
+            text: 'Não foi possível atualizar a lista de demandas.',
+            icon: 'warning',
+            confirmButtonColor: '#F39200'
+        });
     }
 }
 
@@ -31,19 +37,26 @@ function renderizarPagina(lista) {
     });
 
     if (filtradas.length === 0) {
-        corpo.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma demanda encontrada.</td></tr>';
+        // No mobile, removemos o data-label dessa linha de aviso para não bugar
+        corpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: #666;">Nenhuma demanda encontrada para esta busca.</td></tr>';
         return;
     }
 
     filtradas.forEach(d => {
         const dataFormatada = new Date(d.data).toLocaleDateString('pt-BR');
+        
+        // CORREÇÃO AQUI: Adicionado a tag <tr> envolvendo os <td>
         corpo.innerHTML += `
             <tr>
-                <td>${dataFormatada}</td>
-                <td>${d.solicitante}</td>
-                <td>${d.bairro}</td>
-                <td>${d.tipo}</td>
-                <td><span class="badge ${d.status === 'PENDENTE' ? 'badge-pendente' : 'badge-enviada'}">${d.status}</span></td>
+                <td data-label="Data">${dataFormatada}</td>
+                <td data-label="Solicitante"><strong>${d.solicitante}</strong></td>
+                <td data-label="Bairro">${d.bairro}</td>
+                <td data-label="Tipo">${d.tipo}</td>
+                <td data-label="Status">
+                    <span class="badge ${d.status === 'PENDENTE' ? 'badge-pendente' : 'badge-enviada'}">
+                        ${d.status}
+                    </span>
+                </td>
             </tr>
         `;
     });
@@ -53,5 +66,5 @@ function renderizarPagina(lista) {
 document.getElementById('search').addEventListener('input', carregarDemandas);
 document.getElementById('filter-status').addEventListener('change', carregarDemandas);
 
-// Iniciar carregamento
+// Iniciar carregamento ao abrir a página
 carregarDemandas();
