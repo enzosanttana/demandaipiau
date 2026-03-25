@@ -97,14 +97,24 @@ select {
     font-size: 1rem;
     background-color: white;
     cursor: pointer;
-    /* Garante que o texto longo não quebre o layout */
-    white-space: pre-wrap; 
-    appearance: none; /* Remove a seta padrão do navegador para colocar uma personalizada se desejar */
+    
+    /* CORREÇÃO DO AZUL AQUI */
+    color: #333 !important; /* Força a cor do texto para cinza escuro */
+    -webkit-appearance: none; /* Remove o estilo padrão do iOS (iPhone) */
+    -moz-appearance: none;    /* Remove o estilo padrão do Firefox */
+    appearance: none;         /* Remove o estilo padrão moderno */
+    
+    /* Adicionando a setinha novamente (já que o appearance:none remove ela) */
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23008D36' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
-    background-size: 20px;
+    background-size: 18px;
     padding-right: 40px;
+}
+
+select option {
+    color: #333;
+    background-color: white;
 }
 
 select:focus {
