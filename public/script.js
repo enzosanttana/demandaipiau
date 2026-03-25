@@ -21,14 +21,11 @@ form.addEventListener('submit', async (e) => {
     btn.disabled = true;
     btn.innerText = "Processando...";
 
-    // Alerta de carregamento (Loading)
     Swal.fire({
         title: 'Enviando Demanda',
-        text: 'Por favor, aguarde enquanto geramos o PDF e enviamos para o WhatsApp...',
+        text: 'Por favor, aguarde enquanto geramos o seu protocolo...',
         allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+        didOpen: () => { Swal.showLoading(); }
     });
 
     const formData = new FormData();
@@ -40,33 +37,34 @@ form.addEventListener('submit', async (e) => {
     formData.append('foto', fotoInput.files[0]);
 
     try {
-        const response = await fetch('/nova-demanda', {
-            method: 'POST',
-            body: formData
-        });
+        const response = await fetch('/nova-demanda', { method: 'POST', body: formData });
+        const result = await response.json();
 
-        if (response.ok) {
+        if (response.ok && result.success) {
             Swal.fire({
-                title: 'Sucesso!',
-                text: 'Sua demanda foi registrada e enviada com sucesso para a prefeitura.',
+                title: 'Demanda Registrada!',
+                html: `
+                    <p>Sua solicitação foi enviada com sucesso para a prefeitura.</p>
+                    <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin-top: 15px; border: 2px dashed #008D36;">
+                        <span style="font-size: 0.9rem; color: #666; display: block; margin-bottom: 5px;">SEU PROTOCOLO PARA CONSULTA:</span>
+                        <strong style="font-size: 1.6rem; color: #F39200; letter-spacing: 2px;">${result.protocolo}</strong>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.85rem; color: #888;">Anote este número. Você precisará dele no menu <b>Histórico</b>.</p>
+                `,
                 icon: 'success',
-                confirmButtonColor: '#008D36', // Verde Ipiaú
-                confirmButtonText: 'Ótimo!'
+                confirmButtonColor: '#008D36',
+                confirmButtonText: 'ENTENDI E ANOTEI'
             }).then(() => {
                 form.reset();
                 preview.innerHTML = '';
-                window.location.href = "historico.html"; // Redireciona após o OK
             });
-        } else {
-            throw new Error('Erro no servidor');
-        }
+        } else { throw new Error('Erro no servidor'); }
     } catch (err) {
         Swal.fire({
             title: 'Ops!',
-            text: 'Ocorreu um erro ao enviar sua demanda. Verifique sua conexão ou se o WhatsApp está conectado.',
+            text: 'Ocorreu um erro ao enviar sua demanda.',
             icon: 'error',
-            confirmButtonColor: '#F39200', // Laranja Ipiaú
-            confirmButtonText: 'Tentar novamente'
+            confirmButtonColor: '#F39200'
         });
     } finally {
         btn.disabled = false;

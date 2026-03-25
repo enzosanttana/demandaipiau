@@ -34,12 +34,17 @@ header {
 .logo {
     height: 70px;
     border-radius: 16px;
+    object-fit: contain;
 }
 
 header h1 {
     color: var(--verde);
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     margin: 0;
+}
+
+.spacer-header {
+    width: 70px;
 }
 
 .card {
@@ -259,6 +264,8 @@ nav a.active {
     border-bottom: 3px solid var(--verde);
 }
 
+
+
 .badge {
     padding: 6px 12px;
     border-radius: 20px;
@@ -462,7 +469,7 @@ nav a.active {
         font-weight: 800;
         text-transform: uppercase;
         font-size: 0.75rem;
-        color: #718096;
+        color: #5e5e5e;
         flex: 1;
         text-align: left;
     }
