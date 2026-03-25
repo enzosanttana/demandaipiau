@@ -128,5 +128,26 @@ app.get('/api/demandas', (req, res) => {
     else res.json({ role: 'user', data: demandas.filter(d => d.protocolo === req.session.protocolo) });
 });
 
+// --- ROTA PARA DELETAR DEMANDA (APENAS ADMIN) ---
+app.delete('/api/demandas/:id', (req, res) => {
+    // Verifica se é admin
+    if (!req.session.role || req.session.role !== 'admin') {
+        return res.status(403).json({ success: false, message: "Acesso negado." });
+    }
+
+    const id = parseInt(req.params.id);
+    let demandas = readDB();
+    
+    // Filtra para remover a demanda com o ID especificado
+    const novaLista = demandas.filter(d => d.id !== id);
+    
+    if (demandas.length === novaLista.length) {
+        return res.status(404).json({ success: false, message: "Demanda não encontrada." });
+    }
+
+    writeDB(novaLista);
+    res.json({ success: true, message: "Demanda excluída com sucesso." });
+});
+
 app.use(express.static('public'));
 app.listen(3000, () => console.log('🚀 Rodando em http://localhost:3000'));

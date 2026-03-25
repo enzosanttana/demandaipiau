@@ -1,3 +1,14 @@
-2026/03/25-01:06:33.594 2288 Reusing MANIFEST C:\Users\Admin\Desktop\PMIPAU\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
-2026/03/25-01:06:33.604 2288 Recovering log #9
-2026/03/25-01:06:33.607 2288 Reusing old log C:\Users\Admin\Desktop\PMIPAU\.wwebjs_auth\session\Default\Local Storage\leveldb/000009.log 
+2026/03/25-15:07:25.090 336c Reusing MANIFEST C:\Users\Admin\Desktop\PMIPAU\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2026/03/25-15:07:25.151 336c Recovering log #9
+2026/03/25-15:07:25.165 336c Reusing old log C:\Users\Admin\Desktop\PMIPAU\.wwebjs_auth\session\Default\Local Storage\leveldb/000009.log 
+2026/03/25-15:33:46.508 41ec Level-0 table #13: started
+2026/03/25-15:33:46.513 41ec Level-0 table #13: 14198 bytes OK
+2026/03/25-15:33:46.516 41ec Delete type=0 #9
+2026/03/25-15:33:46.517 41ec Compacting 4@0 + 0@1 files
+2026/03/25-15:33:46.522 41ec Generated table #14@0: 90 keys, 7767 bytes
+2026/03/25-15:33:46.522 41ec Compacted 4@0 + 0@1 files => 7767 bytes
+2026/03/25-15:33:46.523 41ec compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/03/25-15:33:46.524 41ec Delete type=2 #3
+2026/03/25-15:33:46.524 41ec Delete type=2 #7
+2026/03/25-15:33:46.524 41ec Delete type=2 #10
+2026/03/25-15:33:46.524 41ec Delete type=2 #13

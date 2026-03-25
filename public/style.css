@@ -89,6 +89,35 @@ label {
     color: #444;
 }
 
+select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+    /* Garante que o texto longo não quebre o layout */
+    white-space: pre-wrap; 
+    appearance: none; /* Remove a seta padrão do navegador para colocar uma personalizada se desejar */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23008D36' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
+select:focus {
+    border-color: var(--laranja);
+    outline: none;
+}
+
+/* Estilizando as opções (funciona em alguns navegadores) */
+option {
+    padding: 10px;
+    font-size: 0.95rem;
+}
+
 input[type="text"],
 select,
 textarea {
@@ -264,7 +293,36 @@ nav a.active {
     border-bottom: 3px solid var(--verde);
 }
 
+/* BOTÃO EXCLUIR PROFISSIONAL */
+.btn-excluir {
+    background-color: #fff1f1; /* Fundo levemente avermelhado */
+    border: 1px solid #ffcccc;
+    color: #e53e3e; /* Vermelho elegante */
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin: 0 auto; /* Centraliza na célula da tabela */
+    width: 38px;
+    height: 38px;
+}
 
+.btn-excluir:hover {
+    background-color: #e53e3e;
+    color: white;
+    border-color: #c53030;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(229, 62, 62, 0.2);
+}
+
+.btn-excluir svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor; /* Faz o ícone seguir a cor do texto do botão */
+}
 
 .badge {
     padding: 6px 12px;
@@ -481,6 +539,17 @@ nav a.active {
     .loading-row td {
         justify-content: center;
         text-align: center;
+    }
+
+        .btn-excluir {
+        width: 100%; /* No card mobile, o botão fica largo */
+        height: 45px;
+        gap: 10px;
+    }
+    .btn-excluir::after {
+        content: "EXCLUIR REGISTRO";
+        font-weight: bold;
+        font-size: 0.8rem;
     }
 
     .footer-grid {

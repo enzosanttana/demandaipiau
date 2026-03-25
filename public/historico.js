@@ -4,10 +4,7 @@
  */
 async function inicializarHistorico() {
     try {
-        // 1. Comando invisível ao servidor para esquecer quem estava logado
         await fetch('/api/limpar-sessao');
-        
-        // 2. Agora tenta carregar (isso vai disparar o erro 403 e abrir o Portal)
         carregarDemandas();
     } catch (e) {
         console.error("Erro ao limpar sessão:", e);
@@ -15,13 +12,12 @@ async function inicializarHistorico() {
 }
 
 /**
- * Função para carregar as demandas (Tenta buscar, se falhar abre o Portal)
+ * Tenta buscar as demandas do servidor
  */
 async function carregarDemandas() {
     try {
         const response = await fetch('/api/demandas');
         
-        // Se o servidor retornar 403 (Não autorizado), abre o portal de login
         if (response.status === 403) {
             abrirPortalAcesso();
             return;
@@ -34,7 +30,7 @@ async function carregarDemandas() {
         console.error("Erro ao carregar:", err);
         Swal.fire({
             title: 'Erro de Conexão',
-            text: 'Não foi possível conectar ao servidor.',
+            text: 'Não foi possível conectar ao servidor da prefeitura.',
             icon: 'error',
             confirmButtonColor: '#F39200'
         });
@@ -42,7 +38,7 @@ async function carregarDemandas() {
 }
 
 /**
- * Abre o alerta inicial perguntando o tipo de acesso
+ * Portal de Acesso (Admin vs Cidadão)
  */
 function abrirPortalAcesso() {
     Swal.fire({
@@ -59,73 +55,44 @@ function abrirPortalAcesso() {
         allowOutsideClick: false,
         allowEscapeKey: false
     }).then((result) => {
-        if (result.isConfirmed) {
-            loginAdmin();
-        } else if (result.isDenied) {
-            loginCidadao();
-        } else {
-            window.location.href = 'index.html';
-        }
+        if (result.isConfirmed) loginAdmin();
+        else if (result.isDenied) loginCidadao();
+        else window.location.href = 'index.html';
     });
 }
 
-/**
- * Modal de login para Administrador
- */
 async function loginAdmin() {
     const { value: formValues } = await Swal.fire({
         title: 'Acesso Administrativo',
         html:
             '<input id="swal-user" class="swal2-input" placeholder="Usuário">' +
             '<input id="swal-pass" type="password" class="swal2-input" placeholder="Senha">',
-        focusConfirm: false,
         confirmButtonText: 'Entrar',
         confirmButtonColor: '#008D36',
         showCancelButton: true,
-        cancelButtonText: 'Voltar',
-        preConfirm: () => {
-            return [
-                document.getElementById('swal-user').value,
-                document.getElementById('swal-pass').value
-            ]
-        }
+        preConfirm: () => [
+            document.getElementById('swal-user').value,
+            document.getElementById('swal-pass').value
+        ]
     });
-
-    if (formValues) {
-        fazerLogin(formValues[0], formValues[1]);
-    } else {
-        abrirPortalAcesso();
-    }
+    if (formValues) fazerLogin(formValues[0], formValues[1]);
+    else abrirPortalAcesso();
 }
 
-/**
- * Modal de busca para Cidadão
- */
 async function loginCidadao() {
     const { value: protocolo } = await Swal.fire({
         title: 'Consulta por Protocolo',
         input: 'text',
-        inputLabel: 'Digite o número do seu protocolo',
         inputPlaceholder: 'IPI-2024-XXXX',
         confirmButtonText: 'Consultar',
         confirmButtonColor: '#F39200',
         showCancelButton: true,
-        cancelButtonText: 'Voltar',
-        inputValidator: (value) => {
-            if (!value) return 'Você precisa digitar o protocolo!';
-        }
+        inputValidator: (value) => !value && 'Você precisa digitar o protocolo!'
     });
-
-    if (protocolo) {
-        fazerLogin(protocolo, null);
-    } else {
-        abrirPortalAcesso();
-    }
+    if (protocolo) fazerLogin(protocolo, null);
+    else abrirPortalAcesso();
 }
 
-/**
- * Envia as credenciais para o servidor
- */
 async function fazerLogin(identifier, password) {
     try {
         const res = await fetch('/api/login', {
@@ -133,23 +100,16 @@ async function fazerLogin(identifier, password) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ identifier, password })
         });
-
         const data = await res.json();
-
-        if (data.success) {
-            // Login deu certo, carrega os dados
-            carregarDemandas();
-        } else {
-            Swal.fire('Acesso Negado', 'Dados inválidos ou protocolo não encontrado.', 'error')
-                .then(() => abrirPortalAcesso());
-        }
+        if (data.success) carregarDemandas();
+        else Swal.fire('Erro', 'Dados inválidos.', 'error').then(() => abrirPortalAcesso());
     } catch (err) {
-        Swal.fire('Erro', 'Falha na comunicação com o servidor.', 'error');
+        Swal.fire('Erro', 'Falha no servidor.', 'error');
     }
 }
 
 /**
- * Renderiza os dados na tabela e Dashboard
+ * RENDERIZAÇÃO DA PÁGINA
  */
 function renderizarPagina(result) {
     const lista = result.data;
@@ -160,7 +120,7 @@ function renderizarPagina(result) {
     const searchInput = document.getElementById('search');
     const filterStatus = document.getElementById('filter-status');
 
-    // 1. Controle do Dashboard: Só aparece para Admin
+    // Controle do Dashboard (Só mostra se for Admin)
     if (role === 'user' && dashboard) {
         dashboard.style.display = 'none';
     } else if (dashboard) {
@@ -172,10 +132,8 @@ function renderizarPagina(result) {
 
     const search = searchInput.value.toLowerCase();
     const statusFiltro = filterStatus.value;
-
     corpo.innerHTML = '';
 
-    // 2. Filtragem e Ordenação
     const filtradas = lista.slice().reverse().filter(d => {
         const matchesSearch = d.solicitante.toLowerCase().includes(search) || 
                              d.bairro.toLowerCase().includes(search) ||
@@ -185,14 +143,24 @@ function renderizarPagina(result) {
     });
 
     if (filtradas.length === 0) {
-        corpo.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: #666;">Nenhuma demanda encontrada.</td></tr>';
+        corpo.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 40px; color: #666;">Nenhuma demanda encontrada.</td></tr>';
         return;
     }
 
-    // 3. Construção da Tabela com data-label para Mobile
     filtradas.forEach(d => {
         const dataFormatada = new Date(d.data).toLocaleDateString('pt-BR');
         
+        // Criamos o botão de excluir com ícone SVG PROFISSIONAL
+        const acaoAdmin = role === 'admin' 
+            ? `<td data-label="Ações">
+                <button class="btn-excluir" onclick="deletarProtocolo(${d.id})" title="Excluir Registro">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+               </td>` 
+            : '';
+
         corpo.innerHTML += `
             <tr>
                 <td data-label="Protocolo"><strong>${d.protocolo}</strong></td>
@@ -205,14 +173,46 @@ function renderizarPagina(result) {
                         ${d.status}
                     </span>
                 </td>
+                ${acaoAdmin}
             </tr>
         `;
     });
 }
 
-// Eventos de busca (SÓ FUNCIONAM SE ESTIVER LOGADO COMO ADMIN)
+/**
+ * FUNÇÃO DE EXCLUSÃO (APENAS ADMIN)
+ */
+async function deletarProtocolo(id) {
+    const confirmacao = await Swal.fire({
+        title: 'Excluir Registro?',
+        text: "Esta ação não pode ser desfeita!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#008D36',
+        confirmButtonText: 'Sim, excluir!',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (confirmacao.isConfirmed) {
+        try {
+            const res = await fetch(`/api/demandas/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                Swal.fire('Excluído!', 'O registro foi removido com sucesso.', 'success');
+                carregarDemandas();
+            } else {
+                Swal.fire('Erro', 'Não foi possível excluir o registro.', 'error');
+            }
+        } catch (e) {
+            Swal.fire('Erro', 'Falha na conexão com o servidor.', 'error');
+        }
+    }
+}
+
+// Eventos de busca
 document.getElementById('search').addEventListener('input', () => carregarDemandas());
 document.getElementById('filter-status').addEventListener('change', () => carregarDemandas());
 
-// INICIALIZAÇÃO OBRIGATÓRIA LIMPANDO SESSÃO
+// Iniciar Processo
 inicializarHistorico();
