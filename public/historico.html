@@ -1,91 +1,129 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ipiaú - Histórico de Demandas</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/historico.css">
+</head>
+<body>
 
-  <body>
     <header>
-      <div class="container header-flex">
-        <img src="images/logopmi.png" class="logo" alt="Prefeitura de Ipiaú" />
-        <h1>Painel de Gestão</h1>
-      </div>
+        <div class="container header-flex">
+            <img src="images/logopmi.png" alt="Logo Ipiaú" class="logo">
+            <h1>Painel de Gestão</h1>
+            <div class="spacer-header"></div>
+        </div>
     </header>
 
     <nav>
-      <div class="container">
-        <a href="index.html">NOVA DEMANDA</a>
-        <a href="historico.html" class="active">HISTÓRICO</a>
-      </div>
+        <div class="container nav-flex-center" id="nav-menu">
+            <a href="index.html">NOVA DEMANDA</a>
+            <a href="historico.html" class="active">HISTÓRICO</a>
+        </div>
     </nav>
 
     <main class="container" style="margin-top: 20px">
-      <!-- DASHBOARD -->
-      <div class="dashboard">
-        <div class="dash-card">
-          <h3>Total de Demandas</h3>
-          <p id="count-total">0</p>
+        <div class="dashboard">
+            <div class="dash-card">
+                <h3>Total de Demandas</h3>
+                <p id="count-total">0</p>
+            </div>
+            <div class="dash-card">
+                <h3>Pendentes</h3>
+                <p id="count-pendentes" style="color: #f39200">0</p>
+            </div>
+            <div class="dash-card">
+                <h3>Enviadas</h3>
+                <p id="count-enviadas">0</p>
+            </div>
         </div>
 
-        <div class="dash-card">
-          <h3>Pendentes</h3>
-          <p id="count-pendentes" style="color: #f39200">0</p>
-        </div>
+        <div class="card">
+            <!-- FILTROS ATUALIZADOS -->
+            <div class="filters">
+                <input type="text" id="search" placeholder="Buscar por solicitante ou protocolo...">
+                
+                <select id="filter-bairro">
+                    <option value="TODOS">🏠 TODOS OS BAIRROS</option>
+                    <option value="Aloísio Conrado">Aloísio Conrado</option>
+                    <option value="Antônio Lourenço">Antônio Lourenço</option>
+                    <option value="Aparecida">Aparecida</option>
+                    <option value="Bairro ACM">Bairro ACM</option>
+                    <option value="Centro">Centro</option>
+                    <option value="Conceição">Conceição</option>
+                    <option value="Constância">Constância</option>
+                    <option value="Democracia">Democracia</option>
+                    <option value="Dois de Dezembro">Dois de Dezembro</option>
+                    <option value="Euclides Neto">Euclides Neto</option>
+                    <option value="Irmã Dulce">Irmã Dulce</option>
+                    <option value="Lauro de Freitas">Lauro de Freitas</option>
+                    <option value="Pau D'Arco">Pau D'Arco</option>
+                    <option value="Santa Rita">Santa Rita</option>
+                    <option value="Santana">Santana</option>
+                    <option value="São Salvador">São Salvador</option>
+                    <option value="Zona Rural">Zona Rural / Distritos</option>
+                </select>
 
-        <div class="dash-card">
-          <h3>Enviadas</h3>
-          <p id="count-enviadas">0</p>
-        </div>
-      </div>
+                <select id="filter-status">
+                    <option value="TODOS">📌 TODOS STATUS</option>
+                    <option value="PENDENTE">PENDENTES</option>
+                    <option value="ENVIADA">ENVIADAS</option>
+                </select>
+            </div>
 
-      <!-- CARD PRINCIPAL -->
-      <div class="card">
-        <!-- FILTROS -->
-        <div class="filters">
-          <input
-            type="text"
-            id="search"
-            placeholder="Buscar por solicitante ou bairro..."
-          />
-
-          <select id="filter-status">
-            <option value="TODOS">TODOS STATUS</option>
-            <option value="PENDENTE">PENDENTES</option>
-            <option value="ENVIADA">ENVIADAS</option>
-          </select>
+            <div class="table-container">
+                <table class="demanda-table">
+                    <thead>
+                        <tr>
+                            <th>Protocolo</th>
+                            <th>Data</th>
+                            <th>Solicitante</th>
+                            <th>Bairro</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-corpo">
+                        <tr class="loading-row">
+                            <td colspan="7" style="text-align:center; padding: 40px; color: #666;">Buscando demandas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <!-- TABELA -->
-        <div class="table-container">
-          <table class="demanda-table">
-            <thead>
-              <tr>
-                <th>Protocolo</th>
-                <th>Data</th>
-                <th>Solicitante</th>
-                <th>Bairro</th>
-                <th>Tipo</th>
-                <th>Status</th>
-                <th class="admin-only">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tabela-corpo">
-              <!-- JS vai preencher aqui -->
-              <tr class="loading-row">
-                <td colspan="5">
-                  <div class="loader-text">Buscando demandas em Ipiaú...</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </main>
 
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <img src="images/logopmi.png" alt="Logo Ipiaú" class="footer-logo">
+                <p>Prefeitura Municipal de Ipiaú<br>Trabalho e Transparência.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="index.html">Nova Demanda</a></li>
+                    <li><a href="historico.html">Histórico de Registros</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contato</h4>
+                <p>Ouvidoria: (73) 3313-2034</p>
+                <p>Email: ouvidoriaprefeituraipiau@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container bottom-flex">
+                <p>&copy; 2026 Prefeitura de Ipiaú - Todos os direitos reservados.</p>
+                <p class="dev-credit">Desenvolvido por <span>Enzo Santana &copy;</span></p>
+            </div>
+        </div>
+    </footer>
+
     <script src="historico.js"></script>
-  </body>
+</body>
 </html>

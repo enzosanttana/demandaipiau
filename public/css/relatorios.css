@@ -1,0 +1,99 @@
+/* REGRAS GERAIS */
+.section-title { margin-bottom: 25px; }
+.section-title h2 { color: #2d3748; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.dot { width: 12px; height: 12px; background: var(--verde); border-radius: 50%; }
+.dot.laranja { background: var(--laranja); }
+.dot.azul { background: #4299e1; }
+
+/* GRID CATEGORIAS */
+.report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+.report-card {
+    background: white; border-radius: 16px; padding: 20px; text-align: center;
+    position: relative; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.report-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--accent-color); }
+.report-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+.icon-circle { width: 55px; height: 55px; background: var(--bg-icon); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.6rem; }
+.report-card h3 { font-size: 0.95rem; color: #4a5568; margin-bottom: 10px; min-height: 40px; }
+.report-card .count { font-size: 2.2rem; font-weight: 900; color: #1a202c; }
+
+/* FILTRO DE BAIRRO */
+.bairro-filter-container {
+    background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 30px; border: 1px solid #e2e8f0;
+}
+#select-bairro-report {
+    width: 100%; padding: 15px; border: 2px solid #edf2f7; border-radius: 10px;
+    font-size: 1rem; font-weight: 600; color: #2d3748; background-color: #f8fafc;
+    cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23F39200' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 15px center; background-size: 18px;
+}
+
+/* GRÁFICOS */
+.charts-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; margin-bottom: 30px; align-items: start; }
+.chart-card {
+    background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+}
+.chart-card h3 { font-size: 1rem; color: #2d3748; margin-bottom: 20px; text-align: center; font-weight: 700; text-transform: uppercase; }
+.canvas-container-barras { min-height: 400px; position: relative; }
+.canvas-container-pizza { max-height: 400px; display: flex; align-items: center; justify-content: center; }
+
+/* LISTA DE RESULTADOS */
+.bairro-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+.card-bairro-item {
+    background: white; padding: 20px; border-radius: 12px; border-left: 6px solid var(--verde);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s;
+}
+.card-bairro-item:hover { transform: scale(1.02); border-left-color: var(--laranja); }
+.card-bairro-item .prot { font-weight: 800; color: var(--verde); font-size: 1rem; }
+.card-bairro-item .solic { display: block; font-weight: 700; color: #2d3748; font-size: 0.95rem; margin-top: 5px; }
+.card-bairro-item .tipo-tag { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: #4a5568; font-weight: 800; display: inline-block; margin-top: 10px; }
+
+/* MODAIS */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal-content { background: white; width: 90%; max-width: 800px; max-height: 85vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; }
+.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+.modal-body { padding: 25px; overflow-y: auto; background: #f1f5f9; }
+.modal-footer { padding: 15px 25px; background: #f8fafc; border-top: 1px solid #eee; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* PAINEL DE INFORMAÇÕES */
+.info-grid-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dado-item label { display: block; font-size: 0.7rem; font-weight: 800; color: #a0aec0; text-transform: uppercase; margin-bottom: 2px; }
+.dado-item span { font-size: 1rem; color: #2d3748; font-weight: 700; }
+.dado-full { grid-column: 1 / -1; }
+.foto-preview-info { width: 100%; max-height: 350px; object-fit: contain; border-radius: 12px; background: #000; margin-top: 10px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+/* BOTÕES DOS MODAIS */
+.btn-gerar-pdf { background: var(--verde); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.btn-gerar-pdf:hover { background: #005a22; transform: translateY(-2px); }
+
+.btn-despacho {
+    background-color: #3182ce; color: white; border: none; padding: 12px 20px;
+    border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s;
+}
+.btn-despacho:hover { background-color: #2b6cb0; transform: translateY(-2px); }
+
+.badge-status-info { background: #d4edda; color: #155724; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 0.8rem; border: 1px solid #c3e6cb; }
+.btn-cancelar { background: #718096; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+/* CORREÇÃO DO Z-INDEX DO SWEETALERT (Para não ficar atrás do painel) */
+.swal2-container { z-index: 2000 !important; }
+
+/* FOLHA A4 */
+.folha-a4 {
+    background: white; width: 210mm; height: 296mm; padding: 5mm 15mm 15mm 15mm; 
+    box-sizing: border-box; overflow: hidden; color: #333; font-family: Arial, sans-serif;
+}
+.a4-header { display: flex; align-items: center; border-bottom: 2px solid var(--verde); padding-bottom: 10px; margin-bottom: 20px; }
+.a4-logo { height: 50px; margin-right: 20px; }
+.a4-protocol-box { background: #fdf2e2; border: 1px solid #f6ad55; padding: 10px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
+.a4-section-title { background: #f4f4f4; padding: 5px 10px; font-weight: bold; border-left: 4px solid var(--verde); margin: 15px 0 10px; font-size: 12px; }
+
+@media (max-width: 900px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .info-grid-dados { grid-template-columns: 1fr; }
+    .modal-footer { flex-direction: column; width: 100%; }
+    .btn-gerar-pdf, .btn-despacho, .btn-cancelar { width: 100%; }
+}

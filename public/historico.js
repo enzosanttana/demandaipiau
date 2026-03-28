@@ -1,59 +1,143 @@
 /**
- * FUNÇÃO DE ENTRADA: 
- * Limpa qualquer sessão anterior e força o pedido de identificação
+ * VARIÁVEIS GLOBAIS
+ */
+let todasAsDemandas = [];
+let roleUsuario = '';
+
+/**
+ * INICIALIZAÇÃO COM BLUR DE SEGURANÇA
  */
 async function inicializarHistorico() {
-    try {
-        await fetch('/api/limpar-sessao');
-        carregarDemandas();
-    } catch (e) {
-        console.error("Erro ao limpar sessão:", e);
+    const mainContent = document.querySelector('main');
+    const paginaAnterior = document.referrer;
+
+    // APLICA O BLUR IMEDIATAMENTE AO CARREGAR
+    mainContent.classList.add('blur-main');
+
+    // Verifica se precisa deslogar (se não vier dos relatórios)
+    if (!paginaAnterior.includes('relatorios.html')) {
+        try {
+            await fetch('/api/limpar-sessao');
+        } catch (e) {
+            console.error("Erro ao limpar sessão:", e);
+        }
     }
+
+    carregarDadosDoServidor();
 }
 
 /**
- * Tenta buscar as demandas do servidor
+ * CARREGAR DADOS DO SERVIDOR
  */
-async function carregarDemandas() {
+async function carregarDadosDoServidor() {
     try {
         const response = await fetch('/api/demandas');
         
         if (response.status === 403) {
+            // Mantém o blur e pede senha
             abrirPortalAcesso();
             return;
         }
 
-        const result = await response.json(); 
-        renderizarPagina(result);
+        const result = await response.json();
+        todasAsDemandas = result.data || [];
+        roleUsuario = result.role || 'user';
+
+        gerenciarMenuRelatorios(roleUsuario);
+        atualizarInterface();
+
+        // REMOVE O BLUR APÓS CARREGAR OS DADOS COM SUCESSO
+        document.querySelector('main').classList.remove('blur-main');
 
     } catch (err) {
-        console.error("Erro ao carregar:", err);
+        console.error("Erro de conexão:", err);
         Swal.fire({
             title: 'Erro de Conexão',
-            text: 'Não foi possível conectar ao servidor da prefeitura.',
+            text: 'Não foi possível conectar ao servidor.',
             icon: 'error',
-            confirmButtonColor: '#F39200'
+            confirmButtonColor: '#008D36'
         });
     }
 }
 
 /**
- * Portal de Acesso (Admin vs Cidadão)
+ * FILTRAGEM E ATUALIZAÇÃO DA TABELA
+ */
+function atualizarInterface() {
+    const corpo = document.getElementById('tabela-corpo');
+    const dashboard = document.querySelector('.dashboard');
+    const termoBusca = document.getElementById('search').value.toLowerCase().trim();
+    const filtroStatus = document.getElementById('filter-status').value;
+    const filtroBairro = document.getElementById('filter-bairro').value;
+
+    if (roleUsuario === 'admin' && dashboard) {
+        dashboard.style.display = 'grid';
+        document.getElementById('count-total').innerText = todasAsDemandas.length;
+        document.getElementById('count-pendentes').innerText = todasAsDemandas.filter(d => d.status === 'PENDENTE').length;
+        document.getElementById('count-enviadas').innerText = todasAsDemandas.filter(d => d.status === 'ENVIADA').length;
+    } else if (dashboard) {
+        dashboard.style.display = 'none';
+    }
+
+    const filtradas = todasAsDemandas.filter(d => {
+        const sol = (d.solicitante || "").toLowerCase();
+        const pro = (d.protocolo || "").toLowerCase();
+        const end = (d.endereco || "").toLowerCase();
+        const matchesSearch = sol.includes(termoBusca) || pro.includes(termoBusca) || end.includes(termoBusca);
+        const matchesStatus = filtroStatus === 'TODOS' || d.status === filtroStatus;
+        const matchesBairro = filtroBairro === 'TODOS' || d.bairro === filtroBairro;
+        return matchesSearch && matchesStatus && matchesBairro;
+    });
+
+    corpo.innerHTML = '';
+    if (filtradas.length === 0) {
+        corpo.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px;">Nenhum registro encontrado.</td></tr>`;
+        return;
+    }
+
+    filtradas.slice().reverse().forEach(d => {
+        const dataFormatada = d.data ? new Date(d.data).toLocaleDateString('pt-BR') : "-";
+        const botaoAcao = roleUsuario === 'admin' 
+            ? `<td data-label="Ação">
+                <button class="btn-excluir" onclick="deletarProtocolo(${d.id})" title="Excluir Registro">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+               </td>` 
+            : '<td data-label="Ação">-</td>';
+
+        corpo.innerHTML += `
+            <tr>
+                <td data-label="Protocolo"><strong>${d.protocolo || "S/ PROT."}</strong></td>
+                <td data-label="Data">${dataFormatada}</td>
+                <td data-label="Solicitante"><strong>${d.solicitante || "Não informado"}</strong></td>
+                <td data-label="Bairro">${d.bairro || "-"}</td>
+                <td data-label="Tipo">${d.tipo || "-"}</td>
+                <td data-label="Status"><span class="badge ${d.status === 'PENDENTE' ? 'badge-pendente' : 'badge-enviada'}">${d.status}</span></td>
+                ${botaoAcao}
+            </tr>`;
+    });
+}
+
+/**
+ * PORTAL DE ACESSO
  */
 function abrirPortalAcesso() {
     Swal.fire({
-        title: 'Acesso ao Histórico',
-        text: 'Identifique-se para visualizar os registros',
-        icon: 'lock',
+        title: 'Consulta de Ocorrências',
+        text: 'Identifique-se para visualizar o histórico de registros.',
+        icon: 'info',
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonText: 'Administrador',
         denyButtonText: 'Cidadão (Protocolo)',
         cancelButtonText: 'Voltar',
-        confirmButtonColor: '#008D36', // Verde
-        denyButtonColor: '#F39200',    // Laranja
+        confirmButtonColor: '#008D36', 
+        denyButtonColor: '#F39200',    
+        cancelButtonColor: '#718096',  
         allowOutsideClick: false,
-        allowEscapeKey: false
+        customClass: { confirmButton: 'prefeitura-btn', denyButton: 'prefeitura-btn', cancelButton: 'prefeitura-btn' }
     }).then((result) => {
         if (result.isConfirmed) loginAdmin();
         else if (result.isDenied) loginCidadao();
@@ -63,156 +147,73 @@ function abrirPortalAcesso() {
 
 async function loginAdmin() {
     const { value: formValues } = await Swal.fire({
-        title: 'Acesso Administrativo',
-        html:
-            '<input id="swal-user" class="swal2-input" placeholder="Usuário">' +
-            '<input id="swal-pass" type="password" class="swal2-input" placeholder="Senha">',
-        confirmButtonText: 'Entrar',
-        confirmButtonColor: '#008D36',
+        title: '🔒 Acesso Administrativo',
+        html: `<div class="login-admin-container">
+                <input id="swal-user" type="text" class="login-input" placeholder="Usuário">
+                <input id="swal-pass" type="password" class="login-input" placeholder="Senha">
+            </div>`,
         showCancelButton: true,
-        preConfirm: () => [
-            document.getElementById('swal-user').value,
-            document.getElementById('swal-pass').value
-        ]
+        confirmButtonText: 'ENTRAR',
+        confirmButtonColor: '#008D36',
+        customClass: { confirmButton: 'prefeitura-btn', cancelButton: 'prefeitura-btn' },
+        preConfirm: () => [document.getElementById('swal-user').value, document.getElementById('swal-pass').value]
     });
-    if (formValues) fazerLogin(formValues[0], formValues[1]);
+    if (formValues) realizarLogin(formValues[0], formValues[1]);
     else abrirPortalAcesso();
 }
 
 async function loginCidadao() {
-    const { value: protocolo } = await Swal.fire({
+    const { value: prot } = await Swal.fire({
         title: 'Consulta por Protocolo',
         input: 'text',
-        inputPlaceholder: 'IPI-2024-XXXX',
-        confirmButtonText: 'Consultar',
-        confirmButtonColor: '#F39200',
+        inputPlaceholder: 'IPI-2026-1234',
         showCancelButton: true,
-        inputValidator: (value) => !value && 'Você precisa digitar o protocolo!'
+        confirmButtonText: 'CONSULTAR',
+        confirmButtonColor: '#F39200',
+        customClass: { confirmButton: 'prefeitura-btn', cancelButton: 'prefeitura-btn' },
+        inputValidator: (v) => !v && 'Digite o protocolo!'
     });
-    if (protocolo) fazerLogin(protocolo, null);
+    if (prot) realizarLogin(prot, null);
     else abrirPortalAcesso();
 }
 
-async function fazerLogin(identifier, password) {
-    try {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier, password })
-        });
-        const data = await res.json();
-        if (data.success) carregarDemandas();
-        else Swal.fire('Erro', 'Dados inválidos.', 'error').then(() => abrirPortalAcesso());
-    } catch (err) {
-        Swal.fire('Erro', 'Falha no servidor.', 'error');
+async function realizarLogin(identifier, password) {
+    const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+        carregarDadosDoServidor();
+    } else {
+        Swal.fire({ title: 'Acesso Negado', text: 'Dados inválidos.', icon: 'error', confirmButtonColor: '#d33' }).then(abrirPortalAcesso);
     }
 }
 
-/**
- * RENDERIZAÇÃO DA PÁGINA
- */
-function renderizarPagina(result) {
-    const lista = result.data;
-    const role = result.role;
-
-    const corpo = document.getElementById('tabela-corpo');
-    const dashboard = document.querySelector('.dashboard');
-    const searchInput = document.getElementById('search');
-    const filterStatus = document.getElementById('filter-status');
-
-    // Controle do Dashboard (Só mostra se for Admin)
-    if (role === 'user' && dashboard) {
-        dashboard.style.display = 'none';
-    } else if (dashboard) {
-        dashboard.style.display = 'grid';
-        document.getElementById('count-total').innerText = lista.length;
-        document.getElementById('count-pendentes').innerText = lista.filter(d => d.status === 'PENDENTE').length;
-        document.getElementById('count-enviadas').innerText = lista.filter(d => d.status === 'ENVIADA').length;
+function gerenciarMenuRelatorios(role) {
+    const navMenu = document.getElementById('nav-menu');
+    if (role === 'admin' && !document.getElementById('btn-relatorios')) {
+        const link = document.createElement('a');
+        link.href = 'relatorios.html';
+        link.id = 'btn-relatorios';
+        link.innerText = 'RELATÓRIOS';
+        navMenu.appendChild(link);
     }
-
-    const search = searchInput.value.toLowerCase();
-    const statusFiltro = filterStatus.value;
-    corpo.innerHTML = '';
-
-    const filtradas = lista.slice().reverse().filter(d => {
-        const matchesSearch = d.solicitante.toLowerCase().includes(search) || 
-                             d.bairro.toLowerCase().includes(search) ||
-                             d.protocolo.toLowerCase().includes(search);
-        const matchesStatus = statusFiltro === 'TODOS' || d.status === statusFiltro;
-        return matchesSearch && matchesStatus;
-    });
-
-    if (filtradas.length === 0) {
-        corpo.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 40px; color: #666;">Nenhuma demanda encontrada.</td></tr>';
-        return;
-    }
-
-    filtradas.forEach(d => {
-        const dataFormatada = new Date(d.data).toLocaleDateString('pt-BR');
-        
-        // Criamos o botão de excluir com ícone SVG PROFISSIONAL
-        const acaoAdmin = role === 'admin' 
-            ? `<td data-label="Ações">
-                <button class="btn-excluir" onclick="deletarProtocolo(${d.id})" title="Excluir Registro">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                    </svg>
-                </button>
-               </td>` 
-            : '';
-
-        corpo.innerHTML += `
-            <tr>
-                <td data-label="Protocolo"><strong>${d.protocolo}</strong></td>
-                <td data-label="Data">${dataFormatada}</td>
-                <td data-label="Solicitante"><strong>${d.solicitante}</strong></td>
-                <td data-label="Bairro">${d.bairro}</td>
-                <td data-label="Tipo">${d.tipo}</td>
-                <td data-label="Status">
-                    <span class="badge ${d.status === 'PENDENTE' ? 'badge-pendente' : 'badge-enviada'}">
-                        ${d.status}
-                    </span>
-                </td>
-                ${acaoAdmin}
-            </tr>
-        `;
-    });
 }
 
-/**
- * FUNÇÃO DE EXCLUSÃO (APENAS ADMIN)
- */
 async function deletarProtocolo(id) {
-    const confirmacao = await Swal.fire({
-        title: 'Excluir Registro?',
-        text: "Esta ação não pode ser desfeita!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#008D36',
-        confirmButtonText: 'Sim, excluir!',
-        cancelButtonText: 'Cancelar'
-    });
-
-    if (confirmacao.isConfirmed) {
-        try {
-            const res = await fetch(`/api/demandas/${id}`, { method: 'DELETE' });
-            const data = await res.json();
-            if (data.success) {
-                Swal.fire('Excluído!', 'O registro foi removido com sucesso.', 'success');
-                carregarDemandas();
-            } else {
-                Swal.fire('Erro', 'Não foi possível excluir o registro.', 'error');
-            }
-        } catch (e) {
-            Swal.fire('Erro', 'Falha na conexão com o servidor.', 'error');
-        }
+    const confirm = await Swal.fire({ title: 'Excluir?', text: 'Deseja apagar este registro?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33' });
+    if (confirm.isConfirmed) {
+        await fetch(`/api/demandas/${id}`, { method: 'DELETE' });
+        carregarDadosDoServidor();
     }
 }
 
-// Eventos de busca
-document.getElementById('search').addEventListener('input', () => carregarDemandas());
-document.getElementById('filter-status').addEventListener('change', () => carregarDemandas());
+// LISTENERS
+document.getElementById('search').addEventListener('input', atualizarInterface);
+document.getElementById('filter-status').addEventListener('change', atualizarInterface);
+document.getElementById('filter-bairro').addEventListener('change', atualizarInterface);
 
-// Iniciar Processo
+// INÍCIO
 inicializarHistorico();

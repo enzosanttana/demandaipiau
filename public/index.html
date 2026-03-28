@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prefeitura de Ipiaú - Registro de Demandas</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 
@@ -17,9 +18,8 @@
         </div>
     </header>
 
-    <!-- MENU DE NAVEGAÇÃO -->
     <nav>
-        <div class="container">
+        <div class="container nav-flex-center" id="nav-menu">
             <a href="index.html" class="active">NOVA DEMANDA</a>
             <a href="historico.html">HISTÓRICO</a>
         </div>
@@ -40,54 +40,44 @@
 
                 <div class="row">
                     <div class="form-group">
-    <label>Bairro</label>
-    <select id="bairro" required>
-        <option value="">🏠 Selecione o bairro...</option>
-        <option value="Aloísio Conrado">Aloísio Conrado</option>
-        <option value="Antônio Lourenço">Antônio Lourenço</option>
-        <option value="Aparecida">Aparecida</option>
-        <option value="Bairro ACM">Bairro ACM</option>
-        <option value="Centro">Centro</option>
-        <option value="Conceição">Conceição</option>
-        <option value="Constância">Constância</option>
-        <option value="Democracia">Democracia</option>
-        <option value="Dois de Dezembro">Dois de Dezembro</option>
-        <option value="Euclides Neto">Euclides Neto (Bairro Novo)</option>
-        <option value="Irmã Dulce">Irmã Dulce</option>
-        <option value="Lauro de Freitas">Lauro de Freitas</option>
-        <option value="Pau D'Arco">Pau D'Arco</option>
-        <option value="Santa Rita">Santa Rita</option>
-        <option value="Santana">Santana</option>
-        <option value="São Salvador">São Salvador</option>
-        <option value="Zona Rural">Zona Rural / Distritos</option>
-    </select>
-</div>
+                        <label>Bairro</label>
+                        <select id="bairro" required>
+                            <option value="">🏠 Selecione o bairro...</option>
+                            <option value="Aloísio Conrado">Aloísio Conrado</option>
+                            <option value="Antônio Lourenço">Antônio Lourenço</option>
+                            <option value="Aparecida">Aparecida</option>
+                            <option value="Bairro ACM">Bairro ACM</option>
+                            <option value="Centro">Centro</option>
+                            <option value="Conceição">Conceição</option>
+                            <option value="Constância">Constância</option>
+                            <option value="Democracia">Democracia</option>
+                            <option value="Dois de Dezembro">Dois de Dezembro</option>
+                            <option value="Euclides Neto">Euclides Neto</option>
+                            <option value="Irmã Dulce">Irmã Dulce</option>
+                            <option value="Lauro de Freitas">Lauro de Freitas</option>
+                            <option value="Pau D'Arco">Pau D'Arco</option>
+                            <option value="Santa Rita">Santa Rita</option>
+                            <option value="Santana">Santana</option>
+                            <option value="São Salvador">São Salvador</option>
+                            <option value="Zona Rural">Zona Rural / Distritos</option>
+                        </select>
+                    </div>
                     <div class="form-group">
-    <label>Tipo de Demanda</label>
-    <select id="tipo" required>
-        <option value="">Selecione o tipo de problema...</option>
-        
-        <option value="Iluminação Pública">💡 Iluminação Pública (Lâmpada apagada ou poste quebrado)</option>
-        
-        <option value="Limpeza Urbana">🧹 Limpeza Urbana (Varrição de rua ou lixo acumulado)</option>
-        
-        <option value="Infraestrutura">🚧 Tapa Buracos / Via (Asfalto estragado ou calçamento ruim)</option>
-        
-        <option value="Saúde">🏥 Saúde (Postos de saúde, remédios ou atendimentos)</option>
-        
-        <option value="Patrolamento">🚜 Patrolamento (Nivelar ruas de terra ou estradas rurais)</option>
-        
-        <option value="Manejo Verde">🌳 Manejo Verde (Poda de árvores ou roçagem de mato)</option>
-        
-        <option value="Entulho">🧱 Entulho (Restos de construção jogados na rua)</option>
-        
-        <option value="Manutenção de Vias Públicas e Praças">⛲ Praças e Parques (Bancos ou brinquedos quebrados)</option>
-        
-        <option value="Animais Soltos">🐕 Animais Soltos (Cavalos ou gado em via pública)</option>
-        
-        <option value="Outros">❓ Outros (Outros problemas não listados acima)</option>
-    </select>
-</div>
+                        <label>Tipo de Demanda</label>
+                        <select id="tipo" required>
+                            <option value="">Selecione o problema...</option>
+                            <option value="Iluminação Pública">💡 Iluminação Pública</option>
+                            <option value="Limpeza Urbana">🧹 Limpeza Urbana</option>
+                            <option value="Tapa Buracos">🚧 Tapa Buracos</option>
+                            <option value="Saúde">🏥 Saúde</option>
+                            <option value="Patrolamento">🚜 Patrolamento</option>
+                            <option value="Manejo Verde">🌳 Poda / Roçagem</option>
+                            <option value="Entulho">🧱 Entulho</option>
+                            <option value="Animais Soltos">🐾 Animais Soltos</option>
+                            <option value="Irregularidade no Setor Público">⚠️ Irregularidade no Setor Público</option>
+                            <option value="Outros">❓ Outros</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -100,11 +90,14 @@
                     <textarea id="descricao" rows="4" required placeholder="Conte-nos o que está acontecendo..."></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label class="btn-file">
-                        📷 Anexar Foto do Local
-                        <input type="file" id="foto" accept="image/*" required>
+                <!-- BOTÃO DE FOTO MELHORADO -->
+                <div class="form-group photo-upload-container">
+                    <label for="foto" class="btn-photo">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+                        TIRAR OU ANEXAR FOTO
                     </label>
+                    <!-- accept e capture fazem a mágica no celular -->
+                    <input type="file" id="foto" accept="image/*" capture="environment">
                     <div id="preview-container"></div>
                 </div>
 
@@ -114,36 +107,31 @@
     </main>
 
     <footer class="main-footer">
-    <div class="container footer-grid">
-        <div class="footer-brand">
-            <img src="images/logopmi.png" alt="Logo Ipiaú" class="footer-logo">
-            <p>Prefeitura Municipal de Ipiaú<br>Trabalho e Transparência.</p>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <img src="images/logopmi.png" alt="Logo Ipiaú" class="footer-logo">
+                <p>Prefeitura Municipal de Ipiaú<br>Trabalho e Transparência.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="index.html">Nova Demanda</a></li>
+                    <li><a href="historico.html">Histórico de Registros</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contato</h4>
+                <p>Ouvidoria: (73) 3313-2034</p>
+                <p>Email: ouvidoriaprefeituraipiau@gmail.com</p>
+            </div>
         </div>
-        
-        <div class="footer-links">
-            <h4>Navegação</h4>
-            <ul>
-                <li><a href="index.html">Nova Demanda</a></li>
-                <li><a href="historico.html">Histórico de Registros</a></li>
-                <li><a href="https://ipiau.ba.gov.br/" target="_blank">Portal Oficial</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <div class="container bottom-flex">
+                <p>&copy; 2026 Prefeitura de Ipiaú - Todos os direitos reservados.</p>
+                <p class="dev-credit">Desenvolvido por <span>Enzo Santana &copy;</span></p>
+            </div>
         </div>
-
-        <div class="footer-contact">
-            <h4>Contato</h4>
-            <p>Ouvidoria: (73) 3313-2034</p>
-            <p>Email: ouvidoriaprefeituraipiau@gmail.com</p>
-            <p>Horário: Seg a Sex, 08h às 12h</p>
-        </div>
-    </div>
-
-    <div class="footer-bottom">
-        <div class="container bottom-flex">
-            <p>&copy; 2026 Prefeitura de Ipiaú - Todos os direitos reservados.</p>
-            <p class="dev-credit">Desenvolvido por <span>Enzo Santana &copy;</span></p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
     <script src="script.js"></script>
 </body>
